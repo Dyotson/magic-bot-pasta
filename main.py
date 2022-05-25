@@ -21,7 +21,10 @@ with requests.Session() as s:
         if 'cardkingdom' in item:
             element = soup.find(class_="stylePrice").get_text()
         else:
-            element = soup.find(class_="price price--withoutTax").get_text()
+            if soup.find(class_="price price--non-sale").get_text() != "\n":
+                element = soup.find(class_="price price--non-sale").get_text()
+            else:
+                element = soup.find(class_="price price--withoutTax").get_text()
         element = element.replace('$', '')
         element = float(element)
         if '(PL)' in df_cartas[i]:

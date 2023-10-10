@@ -9,13 +9,14 @@ from rich import print
 print('Bienvenido al magic-bot-pasta de Jew y Max:\n')
 print('Porfavor, elige tu opcion:')
 print('[bold bright_cyan][1][/bold bright_cyan] Revisar todas las sheets')
-print('[bold bright_cyan][2][/bold bright_cyan] Revisar solo la sheet Carpeta')
+print('[bold bright_cyan][2][/bold bright_cyan] Revisar solo la sheet deseada')
 
 opcion = input('Elija su opcion: ')
 
 while True:
     if opcion == '1':
         Shiits = ['Carpeta', 'Arcades', 'MBT', 'Coleccion','Bulk', 'BulkFoil', 'NivPauper']
+        Shiits = ['Bulk', 'BulkFoil','Arcades', 'Coleccion', 'NivPauper','Michis']
         break
     elif opcion == '2':
         shit = input('Ingrese el nombre del sheet a escanear: ')
@@ -29,7 +30,7 @@ while True:
 for item in Shiits:
     warnings.filterwarnings("ignore")
     sheetname = item
-    df_hist = pd.read_excel(f'Historico{sheetname}.xlsx')
+    #df_hist = pd.read_excel(f'Historico{sheetname}.xlsx')
     df_ori = pd.read_excel('Magic.xlsx', sheet_name = sheetname)
     df_precios = df_ori['Precio SCG']
     df_cartas = df_ori['Carta']
@@ -62,9 +63,9 @@ for item in Shiits:
 
     df_final = pd.DataFrame({'Cartas': df_cartas,'Precio': precios, 'PrecioAnt': df_precios, 'Diferencia': precios - df_precios})
     today = date.today()
-    PrecioHist = 'Precio' + today.strftime("%Y-%m-%d")
+    #PrecioHist = 'Precio' + today.strftime("%Y-%m-%d")
     # df_hist.assign(PrecioHist = precios)
-    df_hist[PrecioHist] = precios
+    #df_hist[PrecioHist] = precios
     df_final.to_excel(f'PreciosActualizados{sheetname}{today}.xlsx')
-    df_hist.to_excel(f'Historico{sheetname}.xlsx')
+    #df_hist.to_excel(f'Historico{sheetname}.xlsx')
     print('[bold bright_cyan]El Bot a terminado <3[/bold bright_cyan]')

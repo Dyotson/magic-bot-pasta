@@ -7,33 +7,24 @@ from bs4 import BeautifulSoup
 from rich import print
 import multiprocessing
 
-session = None
-
-
-def init_process():
-    global session
-    session = requests.Session()
-
 
 def process_shiit(df, df_cartas):
-    global session
-    with session as s:
-        page = s.get(df, headers={"User-Agent": "Mozilla/5.0"})
-        soup = BeautifulSoup(page.content, "html.parser")
-        if soup.find(class_="price price--non-sale").get_text() != "\n":
-            element = soup.find(class_="price price--non-sale").get_text()
-        else:
-            element = soup.find(class_="price price--withoutTax").get_text()
-        element = element.replace("$", "")
-        element = float(element)
-        if "(PL)" in df_cartas:
-            print("Ta usada la wea")
-            element = element * 0.80
-        if "(HP)" in df_cartas:
-            print("Ta MUY usada la wea")
-            element = element * 0.33
-        print(f"{df_cartas} - {element}", flush=True)
-        return element
+    page = requests.get(df).text
+    soup = BeautifulSoup(page, "html.parser")
+    if soup.find(class_="price price--non-sale").get_text() != "\n":
+        element = soup.find(class_="price price--non-sale").get_text()
+    else:
+        element = soup.find(class_="price price--withoutTax").get_text()
+    element = element.replace("$", "")
+    element = float(element)
+    if "(PL)" in df_cartas:
+        print("Ta usada la wea")
+        element = element * 0.80
+    if "(HP)" in df_cartas:
+        print("Ta MUY usada la wea")
+        element = element * 0.33
+    print(f"{df_cartas} - {element}", flush=True)
+    return element
 
 
 if __name__ == "__main__":
@@ -84,7 +75,7 @@ if __name__ == "__main__":
         agregar = (link, nombre)
         to_process.append(agregar)
 
-    with multiprocessing.Pool(4, initializer=init_process) as pool:
+    with multiprocessing.Pool(4) as pool:
         precios = list(pool.starmap(process_shiit, to_process))
 
     df_final = pd.DataFrame(
